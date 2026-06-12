@@ -30,7 +30,44 @@ struct Sventa{
     string fecha;
     Sventa *prventas;
 };
-
+void EscribirDatosInicialesProductos() {
+    ofstream archivo("ListaDatosSproductos.txt");
+    
+    if (!archivo) {
+        cerr << "No se pudo crear el archivo de productos" << endl;
+        return;
+    }
+    archivo << "100|CHAMPU|ACME|CABELLO NORMAL" << endl;
+    archivo << "120|CHAMPU|POLAR|CUIDADO INTENSO" << endl;
+    archivo << "250|JABON|PROCTER|CUIDA TUS MANOS" << endl;
+    archivo << "261|JABON|PROCTER|LIQUIDO ANTIBACTERIAL" << endl;
+    archivo << "350|DESODORANTE|ACME|24 HORAS" << endl;
+    archivo << "370|DESODORANTE|POLAR|ANTITRANSPIRANTE" << endl;
+    archivo << "381|ENJUAGUE BUCAL|POLAR|ANTISARRO" << endl;
+    archivo << "392|ENJUAGUE BUCAL|LISTERINE|SIN ALCOHOL" << endl;
+    archivo << "400|DETERGENTE|ACME|LIMPIO PURO" << endl;
+    archivo << "422|DETERGENTE|PROCTER|SACA GRASA" << endl;
+    archivo << "482|DETERGENTE|POLAR|CON SUAVIZANTE" << endl;
+    
+    archivo.close();
+    cout << "cargados correctamente (11 productos)" << endl;
+}
+void EscribirDatosInicialesPersonas() {
+    ofstream archivo("ListaDatosSpersonas.txt");
+    
+    if (!archivo) {
+        cerr << "No se pudo crear el archivo de personas" << endl;
+        return;
+    }
+    
+    archivo << "111|MARIA PEREZ|EL MARQUEZ|4121112233" << endl;
+    archivo << "222|JUAN DIAZ|CHACAO|4162223344" << endl;
+    archivo << "333|ANTONIO GOMEZ|MONTALBAN|4143334455" << endl;
+    archivo << "444|ANA GONZALEZ|LA URBINA|2124445566" << endl;
+    
+    archivo.close();
+    cout << "Cargados correctamente (4 personas)" << endl;
+}
 void Agregar_Productos(Sproducto **productos) { 
     
     auto Validar = []() -> int {
@@ -528,6 +565,7 @@ void MenuAsociados(){
         cout << "Opcion:\n ";
         cin>>op;    
         switch(op){
+            EscribirDatosInicialesPersonas();
             case 1:
             AgregarAsociado(&asociado);
             break;
@@ -574,6 +612,7 @@ void MenuProductos(){
         cin>>op;
         switch(op){
             case 1:
+            EscribirDatosInicialesProductos();
             Agregar_Productos(&producto);
             break;
             case 2:
