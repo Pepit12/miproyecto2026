@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string.h>
 #include <fstream>
+#include <limits>
 
 //Integrantes del equipo: David Amayo//
 using namespace std;
@@ -30,7 +31,8 @@ struct Sventa{
     Sventa *prventas;
 };
 
-void Agregar_Productos(Sproducto **productos, int x) {
+void Agregar_Productos(Sproducto **productos) { 
+    
     auto Validar = []() -> int {
         int codigo;
         while (true) {
@@ -40,84 +42,72 @@ void Agregar_Productos(Sproducto **productos, int x) {
                 return codigo;
             }
             else {
-                cout << "Entrada inválida. Por favor, inserte un numero entero.\n";
+                cout << "ERROR: Debe ingresar un numero\n";
                 cin.clear();
-                cin.ignore(); 
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
             }
         }
     };
-    if (*productos == NULL) {
-        cout << "No hay datos en la tienda\n";
-        x=Validar();
+    
 
-        Sproducto *ax = new Sproducto;
-        ax->codigo = x;
-        ax->psig = NULL;
-
-        string nombre, marca, descripcion;
-        cout << "Inserte Nombre: "; getline(cin, nombre);
-        cout << "Inserte Marca: "; getline(cin, marca);
-        cout << "Inserte Descripcion: "; getline(cin, descripcion);
-        cout << "Desea almacenar estos datos" << endl;
-        cout << "1. Si" << endl;
-        cout << "2. No" << endl;
-        int n;
-        cin >> n;
-        cin.ignore();
-        if (n == 1) {
-            *productos = ax;
-            ofstream archivo("ListaDatosSproductos.txt", ios::app);
-            if (!archivo) {
-                cerr << "No se pudo abrir el archivo\n";
-                exit(1);
-            }
-            archivo << x << "         " << nombre << "           " << marca << "           " << descripcion << endl;
-            archivo.close();
-        }
-        else {
-            delete ax;
-            cout << "Datos descartados" << endl;
-        }
-        return;
-    }
-
+    int x = Validar();
+    
     Sproducto *act = *productos;
     while (act != NULL) {
         if (act->codigo == x) {
-            cout << "No se puede insertar claves repetidas\n";
+            cout << "ERROR: No se puede insertar codigo repetido\n";
             return;
         }
-        if (act->psig == NULL)
-            break; 
         act = act->psig;
     }
-    x=Validar();
+    
+    Sproducto *ax = new Sproducto;
+    ax->codigo = x;
+    ax->psig = NULL;
+    
     string nombre, marca, descripcion;
-    cout << "Inserte Nombre: "; getline(cin, nombre);
-    cout << "Inserte Marca: "; getline(cin, marca);
-    cout << "Inserte Descripcion: "; getline(cin, descripcion);
+    ax->nombre = nombre;
+    ax->marca = marca;
+    ax->descripcion = descripcion;
+    cout << "Inserte Nombre: "; 
+    getline(cin, nombre);
+    cout << "Inserte Marca: "; 
+    getline(cin, marca);
+    cout << "Inserte Descripcion: "; 
+    getline(cin, descripcion);
+    
     cout << "Desea almacenar estos datos" << endl;
     cout << "1. Si" << endl;
     cout << "2. No" << endl;
     int n;
     cin >> n;
     cin.ignore();
+    
     if (n == 1) {
-        Sproducto *ax = new Sproducto;
-        ax->codigo = x;
-        ax->psig = NULL;
 
-        act->psig = ax;
+        if (*productos == NULL) {
+            *productos = ax; 
+        } else {
+            act = *productos;
+            while (act->psig != NULL) {
+                act = act->psig;
+            }
+            act->psig = ax;
+        }
+        
         ofstream archivo("ListaDatosSproductos.txt", ios::app);
         if (!archivo) {
-            cerr << "No se pudo abrir el archivo\n";
-            exit(1);
+            cerr << "ERROR: No se pudo abrir el archivo\n";
+            return;
         }
-        archivo << x << "         " << nombre << "           " << marca << "           " << descripcion << endl;
+        archivo << x << "        " << nombre << "             " << marca << "             " << descripcion << endl;
         archivo.close();
+        
+        cout << "Producto guardado correctamente\n";
     }
     else {
-        cout << "Datos descartados" << endl;
+        delete ax;
+        cout << "Datos descartados.\n";
     }
 }
 
@@ -174,56 +164,80 @@ void consultar_producto_pornombre(const string &ListaDatosSproductos, const stri
 
 void ModificarProducto(Sproducto *producto, int x) {
     Sproducto *ax = producto;
+    
     while (ax != NULL) {
         if (ax->codigo == x) {
             cout << "Codigo encontrado\n";
-
+            
             int op;
             string texto;
+            
             do {
-                cout << "Seleccione la opcion que desea modificar:\n";
+                cout << "\nSeleccione la opcion que desea modificar:\n";
                 cout << "1. Nombre\n";
                 cout << "2. Marca\n";
                 cout << "3. Descripcion\n";
-                cout << "4. Salir\n";
-                cout << "Opción: ";
+                cout << "0. Salir y guardar\n";
+                cout << "Opcion: ";
                 cin >> op;
-                cin.ignore(); 
-
+                cin.ignore();
+                
                 switch (op) {
                     case 1:
                         cout << "Ingrese nuevo nombre: ";
                         getline(cin, texto);
-                        ax->nombre = texto;
-                        cout << "Nombre modificado correctamente.\n";
+                        if (!texto.empty()) {
+                            ax->nombre = texto;
+                            cout << "Nombre modificado correctamente.\n";
+                        }
                         break;
                     case 2:
                         cout << "Ingrese nueva marca: ";
                         getline(cin, texto);
-                        ax->marca = texto;
-                        cout << "Marca modificada correctamente.\n";
+                        if (!texto.empty()) {
+                            ax->marca = texto;
+                            cout << "Marca modificada correctamente.\n";
+                        }
                         break;
                     case 3:
                         cout << "Ingrese nueva descripcion: ";
                         getline(cin, texto);
-                        ax->descripcion = texto;
-                        cout << "Descripcion modificada correctamente.\n";
+                        if (!texto.empty()) {
+                            ax->descripcion = texto;
+                            cout << "Descripcion modificada correctamente.\n";
+                        }
                         break;
-                    case 4:
-                        cout << "Saliendo de modificaciones...\n";
+                    case 0:
+                        cout << "Se guardo los cambios\n";
                         break;
                     default:
-                        cout << "Opcion invalida. Intente de nuevo.\n";
+                        cout << "Opcion invalida\n";
                 }
-            } while (op != 4);
-
+            } while (op != 0);
+            
+            ofstream archivo("ListaDatosSproductos.txt");
+            if (archivo) {
+                Sproducto *temp = producto;
+                while (temp != NULL) {
+                    archivo << temp->codigo << "        " 
+                            << temp->nombre << "             " 
+                            << temp->marca << "             " 
+                            << temp->descripcion << endl;
+                    temp = temp->psig;
+                }
+                archivo.close();
+                cout << "Cambios guardados correctamente.\n";
+            } else {
+                cerr << "ERROR: No se pudo guardar los cambios\n";
+            }
+            
             return;
         }
         ax = ax->psig;
     }
+    
     cout << "Codigo no encontrado\n";
 }
-
 
 void EliminarCodigoProducto(Sproducto **producto, int x){
     Sproducto *ax=*producto, *t=NULL;
@@ -261,7 +275,8 @@ void MostrarProducto(){
     archivo.close();
     
 }
-void AgregarAsociado(Sasociado **asociado, int x) {
+void AgregarAsociado(Sasociado **asociado) { 
+    
     auto Validar = []() -> int {
         int codigo;
         while (true) {
@@ -271,86 +286,69 @@ void AgregarAsociado(Sasociado **asociado, int x) {
                 return codigo;
             }
             else {
-                cout << "Entrada inválida. Por favor, inserte un numero entero.\n";
+                cout << "ERROR: Debe ingresar un numero\n";
                 cin.clear();
-                cin.ignore(); 
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
             }
         }
     };
+    
 
-    if (*asociado == NULL) {
-        cout << "No hay datos en la tienda\n";
-        x=Validar();
-
-        Sasociado *ax = new Sasociado;
-        ax->codigo = x;
-        ax->pnext = NULL;
-
-        string nombre, direccion, telefono;
-        cout << "Inserte Nombre: "; getline(cin, nombre);
-        cout << "Inserte Direccion: "; getline(cin, direccion);
-        cout << "Inserte Telefono: "; getline(cin, telefono);
-        cout << "Desea almacenar estos datos" << endl;
-        cout << "1. Si" << endl;
-        cout << "2. No" << endl;
-        int n;
-        cin >> n;
-        cin.ignore();
-        if (n == 1) {
-            *asociado = ax;
-            ofstream archivo("ListaDatosSasociados.txt", ios::app);
-            if (!archivo) {
-                cerr << "No se pudo abrir el archivo\n";
-                exit(1);
-            }
-            archivo << x << "         " << nombre << "           " << direccion << "           " << telefono << endl;
-            archivo.close();
-        }
-        else {
-            delete ax;
-            cout << "Datos descartados" << endl;
-        }
-        return;
-    }
-
+    int x = Validar();
+    
     Sasociado *act = *asociado;
     while (act != NULL) {
         if (act->codigo == x) {
-            cout << "No se puede insertar claves repetidas\n";
+            cout << "ERROR: No se puede insertar codigo repetido\n";
             return;
         }
-        if (act->pnext == NULL)
-            break; 
         act = act->pnext;
     }
-    x=Validar();
-
+    
+    Sasociado *ax = new Sasociado;
+    ax->codigo = x;
+    ax->pnext = NULL;
+    
     string nombre, direccion, telefono;
-    cout << "Inserte Nombre: "; getline(cin, nombre);
-    cout << "Inserte Direccion: "; getline(cin, direccion);
-    cout << "Inserte Telefono: "; getline(cin, telefono);
+    cout << "Inserte Nombre: "; 
+    getline(cin, nombre);
+    cout << "Inserte Direccion: "; 
+    getline(cin, direccion);
+    cout << "Inserte Telefono: "; 
+    getline(cin, telefono);
+    
     cout << "Desea almacenar estos datos" << endl;
     cout << "1. Si" << endl;
     cout << "2. No" << endl;
     int n;
     cin >> n;
     cin.ignore();
+    
     if (n == 1) {
-        Sasociado *ax = new Sasociado;
-        ax->codigo = x;
-        ax->pnext = NULL;
 
-        act->pnext = ax;
+        if (*asociado == NULL) {
+            *asociado = ax; 
+        } else {
+            act = *asociado;
+            while (act->pnext != NULL) {
+                act = act->pnext;
+            }
+            act->pnext = ax;
+        }
+        
         ofstream archivo("ListaDatosSasociados.txt", ios::app);
         if (!archivo) {
-            cerr << "No se pudo abrir el archivo\n";
-            exit(1);
+            cerr << "ERROR: No se pudo abrir el archivo\n";
+            return;
         }
-        archivo << x << "         " << nombre << "           " << direccion << "           " << telefono << endl;
+        archivo << x << "        " << nombre << "             " << direccion << "             " << telefono << endl;
         archivo.close();
+        
+        cout << "Producto guardado correctamente\n";
     }
     else {
-        cout << "Datos descartados" << endl;
+        delete ax;
+        cout << "Datos descartados\n";
     }
 }
 
@@ -407,17 +405,82 @@ void consultar_asociado_pornombre(const string &ListaDatosSasociados, const stri
 }
 
 void ModificarAsociado(Sasociado *asociado, int x) {
-    Sasociado *ax=asociado;
-    while(ax!=NULL){
-        if(ax->codigo==x){
-            cout<<"Codigo encontrado"<<endl;
+    Sasociado *ax = asociado;
+    
+    while (ax != NULL) {
+        if (ax->codigo == x) {
+            cout << "Codigo encontrado\n";
+            
+            int op;
+            string texto;
+            
+            do {
+                cout << "\nSeleccione la opcion que desea modificar:\n";
+                cout << "1. Nombre\n";
+                cout << "2. Direccion\n";
+                cout << "3. Telefono\n";
+                cout << "0. Salir y guardar\n";
+                cout << "Opcion: ";
+                cin >> op;
+                cin.ignore();
+                
+                switch (op) {
+                    case 1:
+                        cout << "Ingrese nuevo nombre: ";
+                        getline(cin, texto);
+                        if (!texto.empty()) {
+                            ax->nombre = texto;
+                            cout << "Nombre modificado correctamente.\n";
+                        }
+                        break;
+                    case 2:
+                        cout << "Ingrese nueva direccion: ";
+                        getline(cin, texto);
+                        if (!texto.empty()) {
+                            ax->direccion = texto;
+                            cout << "Marca modificada correctamente.\n";
+                        }
+                        break;
+                    case 3:
+                        cout << "Ingrese nuevo telefono: ";
+                        getline(cin, texto);
+                        if (!texto.empty()) {
+                            ax->telefono = texto;
+                            cout << "Descripcion modificada correctamente.\n";
+                        }
+                        break;
+                    case 0:
+                        cout << "Se guardo los cambios\n";
+                        break;
+                    default:
+                        cout << "Opcion invalida\n";
+                }
+            } while (op != 0);
+            
+            ofstream archivo("ListaDatosSasociados.txt");
+            if (archivo) {
+                Sasociado *temp = asociado;
+                while (temp != NULL) {
+                    archivo << temp->codigo << "        " 
+                            << temp->nombre << "             " 
+                            << temp->direccion << "             " 
+                            << temp->telefono << endl;
+                    temp = temp->pnext;
+                }
+                archivo.close();
+                cout << "Cambios guardados correctamente.\n";
+            } else {
+                cerr << "ERROR: No se pudo guardar los cambios\n";
+            }
+            
             return;
         }
-        ax=ax->pnext;
-    };
-    cout<<"Codigo no encontrado"<<endl;
-    return;
+        ax = ax->pnext;
+    }
+    
+    cout << "Codigo no encontrado\n";
 }
+
 void EliminarCodigoAsociado(Sasociado **asociado, int x){
     Sasociado *ax=*asociado, *t=NULL;
     if(ax!=NULL){
@@ -463,11 +526,10 @@ void MenuAsociados(){
     while(op!=0){
         cout << "1) Agregar\n2) Consultar por codigo\n3) Consultar por nombre\n4) Modificar por codigo\n5) Eliminar por codigo\n6) Mostrar todas los asociados\n\n0) Salir\n\n";
         cout << "Opcion:\n ";
-        cin>>op;
+        cin>>op;    
         switch(op){
-            case 1:cout<<"Inserte el codigo a validar"<<endl;
-            cin>>n;
-            AgregarAsociado(&asociado, n);
+            case 1:
+            AgregarAsociado(&asociado);
             break;
             case 2:
             cout<<"Inserte el codigo a consultar"<<endl;cin>>n;
@@ -511,9 +573,8 @@ void MenuProductos(){
         cout << "Opcion:\n ";
         cin>>op;
         switch(op){
-            case 1:cout<<"Inserte el codigo"<<endl;
-            cin>>n;
-            Agregar_Productos(&producto, n);
+            case 1:
+            Agregar_Productos(&producto);
             break;
             case 2:
             cout<<"Inserte el codigo a consultar"<<endl;cin>>n;
@@ -571,4 +632,3 @@ int main(){
         system("cls");
     }
 }
-
