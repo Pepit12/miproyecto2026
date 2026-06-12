@@ -1,5 +1,5 @@
 #include <iostream>
-#include <string.h>
+#include <string>
 #include <fstream>
 #include <limits>
 
@@ -37,36 +37,36 @@ void EscribirDatosInicialesProductos() {
         cerr << "No se pudo crear el archivo de productos" << endl;
         return;
     }
-    archivo << "100|CHAMPU|ACME|CABELLO NORMAL" << endl;
-    archivo << "120|CHAMPU|POLAR|CUIDADO INTENSO" << endl;
-    archivo << "250|JABON|PROCTER|CUIDA TUS MANOS" << endl;
-    archivo << "261|JABON|PROCTER|LIQUIDO ANTIBACTERIAL" << endl;
-    archivo << "350|DESODORANTE|ACME|24 HORAS" << endl;
-    archivo << "370|DESODORANTE|POLAR|ANTITRANSPIRANTE" << endl;
-    archivo << "381|ENJUAGUE BUCAL|POLAR|ANTISARRO" << endl;
-    archivo << "392|ENJUAGUE BUCAL|LISTERINE|SIN ALCOHOL" << endl;
-    archivo << "400|DETERGENTE|ACME|LIMPIO PURO" << endl;
-    archivo << "422|DETERGENTE|PROCTER|SACA GRASA" << endl;
-    archivo << "482|DETERGENTE|POLAR|CON SUAVIZANTE" << endl;
+    archivo << "100	    CHAMPU		   ACME			CABELLO NORMAL" << endl;
+    archivo << "120	    CHAMPU		   POLAR		CUIDADO INTENSO" << endl;
+    archivo << "250	    JABON		   PROCTER		CUIDA TUS MANOS" << endl;
+    archivo << "261	    JABON		   PROCTER		LIQUIDO ANTIBACTERIAL" << endl;
+    archivo << "350	    DESODORANTE		   ACME			24 HORAS" << endl;
+    archivo << "370	    DESODORANTE		   POLAR		ANTITRANSPIRANTE" << endl;
+    archivo << "381	    ENJUAGUE BUCAL	   POLAR		ANTISARRO" << endl;
+    archivo << "392	    ENJUAGUE BUCAL	   LISTERINE		SIN ALCOHOL" << endl;
+    archivo << "400	    DETERGENTE		   ACME			LIMPIO PURO" << endl;
+    archivo << "422	    DETERGENTE		   PROCTE		SACA GRASA" << endl;
+    archivo << "482	    DETERGENTE		   POLAR		CON SUAVIZANTE" << endl;
     
     archivo.close();
-    cout << "cargados correctamente (11 productos)" << endl;
+    cout << "cargados correctamente" << endl;
 }
-void EscribirDatosInicialesPersonas() {
-    ofstream archivo("ListaDatosSpersonas.txt");
+void EscribirDatosInicialesAsociados() {
+    ofstream archivo("ListaDatosSasociados.txt");
     
     if (!archivo) {
         cerr << "No se pudo crear el archivo de personas" << endl;
         return;
     }
     
-    archivo << "111|MARIA PEREZ|EL MARQUEZ|4121112233" << endl;
-    archivo << "222|JUAN DIAZ|CHACAO|4162223344" << endl;
-    archivo << "333|ANTONIO GOMEZ|MONTALBAN|4143334455" << endl;
-    archivo << "444|ANA GONZALEZ|LA URBINA|2124445566" << endl;
+    archivo << "111	MARIA PEREZEL		MARQUEZ		   4121112233" << endl;
+    archivo << "222	JUAN DIAZ		CHACAO		   4162223344" << endl;
+    archivo << "333	ANTONIO GOMEZ		MONTALBAN	   4143334455" << endl;
+    archivo << "444	ANA GONZALEZ		LA URBINA	   2124445566" << endl;
     
     archivo.close();
-    cout << "Cargados correctamente (4 personas)" << endl;
+    cout << "Cargados correctamente" << endl;
 }
 void Agregar_Productos(Sproducto **productos) { 
     
@@ -191,9 +191,9 @@ void consultar_producto_pornombre(const string &ListaDatosSproductos, const stri
             cout << "Linea " << num_linea << ": " << linea << '\n';
         }
     }
-    
+ 
     if (!encontrado) {
-        cout << "No se encontró \"" << palabra << "\" en " << ListaDatosSproductos << '\n';
+        cout << "No se encuentra \"" << palabra << "\" en " << ListaDatosSproductos << '\n';
     }
     
     fclose(archivo);
@@ -434,7 +434,7 @@ void consultar_asociado_pornombre(const string &ListaDatosSasociados, const stri
     }
     
     if (!encontrado) {
-        cout << "No se encontró \"" << palabra << "\" en " << ListaDatosSasociados << '\n';
+        cout << "No se encuentra \"" << palabra << "\" en " << ListaDatosSasociados << '\n';
     } 
 
     
@@ -546,7 +546,8 @@ void MostrarAsociado(){
         cout<< "No se pudo abrir el archivo"; 
         return;
     }
-        cout<<"Codigo       Nombre              Direccion           Telefono"<<endl;
+        cout <<"Codigo       Nombre              Direccion           Telefono"<<endl;
+		
     while(!archivo.eof()){
         getline(archivo,texto);
         cout<<texto<<endl;
@@ -557,15 +558,16 @@ void MostrarAsociado(){
 
 
 void MenuAsociados(){
-    system("cls");
-    int op=-1, n=0;
-    Sasociado *asociado=NULL;
+	 system("cls");
+
+     int op=-1, n=0;
+     Sasociado *asociado=NULL;
+
     while(op!=0){
         cout << "1) Agregar\n2) Consultar por codigo\n3) Consultar por nombre\n4) Modificar por codigo\n5) Eliminar por codigo\n6) Mostrar todas los asociados\n\n0) Salir\n\n";
-        cout << "Opcion:\n ";
-        cin>>op;    
+        cout<<"Opcion:"<<endl;
+		cin>>op;
         switch(op){
-            EscribirDatosInicialesPersonas();
             case 1:
             AgregarAsociado(&asociado);
             break;
@@ -612,7 +614,6 @@ void MenuProductos(){
         cin>>op;
         switch(op){
             case 1:
-            EscribirDatosInicialesProductos();
             Agregar_Productos(&producto);
             break;
             case 2:
@@ -668,6 +669,7 @@ int main(){
         break;
         default: cout << "Opcion invalida.\n"; break;
         }
+		system("pause");
         system("cls");
     }
 }
